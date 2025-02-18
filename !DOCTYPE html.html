@@ -3,54 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timer Nascosto con Immagine</title>
+<title>Timer Nascosto con Immagine e Suono</title>
 <style>
     body {
         font-family: Arial, sans-serif;
         text-align: center;
         padding: 20px;
+        background-color: black; /* Background color set to black */
+        color: #ff6f20; /* Text color set to #ff6f20 */
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Full height to center content vertically */
     }
-    #startButton {
-        padding: 10px 20px;
-        font-size: 16px;
+    .container {
+        text-align: center;
+        display: block; /* Ensure block level for proper centering */
+    }
+    button {
+        padding: 25px 50px;
+        font-size: 30px;
         cursor: pointer;
+        background-color: #ff6f20; /* Button color to match text */
+        border: none;
+        border-radius: 5px;
+        color: black; /* Text color on button */
+        margin-top: 10px; /* Space between buttons */
     }
-    #timerImage {
-        display: none; /* Inizialmente nascosto */
-        max-width: 100%; /* Assicura che l'immagine sia responsiva */
+    #timerImage, #waitingText {
+        display: none; /* Initially hidden */
+        max-width: 150%; /* Ensures image is responsive */
         height: auto;
+        margin: 0 auto; /* Centers the image horizontally */
+    }
+    @keyframes vibrate {
+        0% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(-2px, -2px); }
+        60% { transform: translate(2px, 2px); }
+        80% { transform: translate(2px, -2px); }
+        100% { transform: translate(0); }
+    }
+    .vibrating {
+        animation: vibrate 0.1s infinite; /* Adjust timing to control speed */
     }
 </style>
 </head>
 <body>
-<div id="timerText">Questo timer dura 5 minuti</div>
-<button id="startButton" onclick="startTimer()">Avvia Timer</button>
-<img id="timerImage" src="C:\Users\andy\Desktop\timer\endimage.png" alt="end of the round">
-
-<audio id="timerSound" src="C:\Users\andy\Desktop\timer\end.mp3" preload="auto"></audio>
+<div class="container">
+    <div id="timerText">5 minuti</div>
+    <button id="startButton" onclick="startTimer()">Avvia Timer</button>
+    <button id="resetButton" onclick="resetPage()" style="display:none;">Resetta Timer</button>
+    <div id="waitingText">Round in corso...</div>
+    <img id="endimage.jpg" alt="Descrizione Immagine">
+    <audio id="round.mp3" preload="auto"></audio>
+</div>
 
 <script>
+let timer = null; // Global variable to hold timer reference
+let countdownInterval = null; // Interval for final countdown
+
 function startTimer() {
-    // Nascondo il testo e il bottone
+    resetPage(); // Reset any running timers or states before starting new
+    document.getElementById('resetButton').style.display = 'block'; // Show reset button
+
+    // Hide the text and button immediately upon clicking
     document.getElementById('timerText').style.display = 'none';
     document.getElementById('startButton').style.display = 'none';
-    
-    // Mostro l'immagine
-    document.getElementById('timerImage').style.display = 'block';
-    
-    // Avvio il timer di 5 minuti (300000 millisecondi)
-    setTimeout(function() {
-        // Suono che parte al termine del timer
-        document.getElementById('timerSound').play();
-    }, 1000); // Modifica questo valore per cambiare la durata del timer
+
+    // Show waiting message
+    document.getElementById('waitingText').style.display = 'block';
+    document.getElementById('waitingText').textContent = 'Attendi, il timer è in corso...';
+
+    // Set a 5-minute timer minus 10 seconds for the countdown
+    timer = setTimeout(function() {
+        startFinalCountdown();
+    }, 290000); // 290000 milliseconds = 4 minutes and 50 seconds
 }
 
-// Funzione per fermare il suono (opzionale, se vuoi aggiungerla)
-function stopSound() {
-    document.getElementById('timerSound').pause();
-    document.getElementById('timerSound').currentTime = 0;
+function startFinalCountdown() {
+    let countdown = 10;
+    countdownInterval = setInterval(function() {
+        if (countdown > 0) {
+            document.getElementById('waitingText').textContent = `Mancano ${countdown} secondi...`;
+            countdown--;
+        } else {
+            clearInterval(countdownInterval);
+            showFinalEffects();
+        }
+    }, 1000);
+}
+
+function showFinalEffects() {
+    // Hide waiting message
+    document.getElementById('waitingText').style.display = 'none';
+
+    // Show the image when the timer ends and apply vibration
+    var img = document.getElementById('timerImage');
+    img.style.display = 'block';
+    img.classList.add('vibrating'); // Start vibrating effect
+
+    // Play the audio when the timer ends
+    var sound = document.getElementById('timerSound');
+    sound.play();
+    
+    // Listen for when the audio ends
+    sound.onended = function() {
+        img.classList.remove('vibrating'); // Stop vibrating effect
+        resetPage(); // Reset the page
+    };
+}
+
+function resetPage() {
+    clearTimeout(timer); // Clear the existing timer
+    clearInterval(countdownInterval); // Stop the countdown
+    document.getElementById('timerText').style.display = 'block';
+    document.getElementById('startButton').style.display = 'block';
+    document.getElementById('resetButton').style.display = 'none'; // Hide reset button
+    document.getElementById('waitingText').style.display = 'none';
+    document.getElementById('timerImage').style.display = 'none';
+    document.getElementById('timerImage').classList.remove('vibrating');
+    document.getElementById('timerSound').currentTime = 0; // Reset audio to start
+    document.getElementById('timerSound').pause(); // Stop any playing audio
 }
 </script>
 </body>
 </html>
+
 
