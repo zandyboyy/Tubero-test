@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timer Nascosto con Immagine</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+    }
+    #startButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    #timerImage {
+        display: none; /* Inizialmente nascosto */
+        max-width: 100%; /* Assicura che l'immagine sia responsiva */
+        height: auto;
+    }
+</style>
+</head>
+<body>
+<div id="timerText">Questo timer dura 5 minuti</div>
+<button id="startButton" onclick="startTimer()">Avvia Timer</button>
+<img id="timerImage" src="C:\Users\andy\Desktop\timer\endimage.png" alt="end of the round">
+
+<audio id="timerSound" src="C:\Users\andy\Desktop\timer\end.mp3" preload="auto"></audio>
+
+<script>
+function startTimer() {
+    // Nascondo il testo e il bottone
+    document.getElementById('timerText').style.display = 'none';
+    document.getElementById('startButton').style.display = 'none';
+    
+    // Mostro l'immagine
+    document.getElementById('timerImage').style.display = 'block';
+    
+    // Avvio il timer di 5 minuti (300000 millisecondi)
+    setTimeout(function() {
+        // Suono che parte al termine del timer
+        document.getElementById('timerSound').play();
+    }, 1000); // Modifica questo valore per cambiare la durata del timer
+}
+
+// Funzione per fermare il suono (opzionale, se vuoi aggiungerla)
+function stopSound() {
+    document.getElementById('timerSound').pause();
+    document.getElementById('timerSound').currentTime = 0;
+}
+</script>
+</body>
+</html>
+
